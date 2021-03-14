@@ -77,6 +77,15 @@ The graphing work!
         .attr('r',8)
         .attr('stroke-width',2)
 
+
+    var toopTip = d3.tip()
+        .attr('class','d3-tip')
+        .offset([80,-60])
+        .html(function(d) {
+            
+            return (`${d.state}<br>${xAxis.toUpperCase}: ${d[xAxis]}<br>`)
+        })
+
     var stateText = chartGroup.append('g').selectAll('text');
 
     stateText.data(censusData)
