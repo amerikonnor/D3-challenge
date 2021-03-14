@@ -60,31 +60,19 @@ The graphing work!
     chartGroup.append('g').attr('id','x-axis').attr('transform', `translate(0,${chartHeight})`).call(bottomAxis);
     chartGroup.append('g').attr('id','y-axis').call(leftAxis);
 
+    
 
-    var circles = chartGroup.append('g').selectAll('circle');
-
-    console.log(censusData[0])
-    console.log(censusData[0].smokes)
-    console.log(yScale(censusData[0].smokes));
+    var circles = chartGroup.append('g').selectAll('circle').data(censusData);
 
 
-    circles.data(censusData)
-        .enter()
+    circles.enter()
         .append('circle')
         .classed('stateCircle',true)
         .attr('cx',d => xScale(d.age))
         .attr('cy',d => yScale(d.smokes))
         .attr('r',8)
-        .attr('stroke-width',2)
+        .attr('stroke-width',2);
 
-
-    var toopTip = d3.tip()
-        .attr('class','d3-tip')
-        .offset([80,-60])
-        .html(function(d) {
-            
-            return (`${d.state}<br>${xAxis.toUpperCase}: ${d[xAxis]}<br>`)
-        })
 
     var stateText = chartGroup.append('g').selectAll('text');
 
@@ -108,18 +96,29 @@ The graphing work!
         .classed('aText inactive',true)
         .text('Household Income (Median)')
 
+    var healthcareXLabel = chartGroup.append('text')
+        .attr('id','healthcare')
+        .attr('transform', `translate(${(chartWidth)/2}, ${chartHeight + chartMargin.top + 60})`)
+        .classed('aText inactive',true)
+        .text('Lacks Healthcare (%)')
 
     var smokesYLabel = chartGroup.append('text')
         .attr('id','smokes')
-        .attr('transform',`translate(${-70}, ${chartHeight/2}) rotate(-90)`)
+        .attr('transform',`translate(${-80}, ${chartHeight/2}) rotate(-90)`)
         .classed('aText active',true)
         .text('Smokes (%)')
 
     var povertyYLabel = chartGroup.append('text')
         .attr('id','poverty')
-        .attr('transform',`translate(${-50}, ${chartHeight/2}) rotate(-90)`)
+        .attr('transform',`translate(${-60}, ${chartHeight/2}) rotate(-90)`)
         .classed('aText inactive',true)
         .text('Poverty (%)')
+
+    var obesityYLabel = chartGroup.append('text')
+    .attr('id','obesity')
+    .attr('transform',`translate(${-40}, ${chartHeight/2}) rotate(-90)`)
+    .classed('aText inactive',true)
+    .text('Obese (%)')
 
 
     ageXLabel.on('mouseover',function(){
@@ -133,6 +132,7 @@ The graphing work!
             theyClickedSomething(xAxis,yAxis);
             d3.select(this).attr('class','aText active');
             d3.select('#income').attr('class','aText inactive');
+            d3.select('#healthcare').attr('class','aText inactive');
         })
 
     incomeXLabel.on('mouseover',function(){
@@ -146,8 +146,22 @@ The graphing work!
         theyClickedSomething(xAxis,yAxis);
         d3.select(this).attr('class','aText active');
         d3.select('#age').attr('class','aText inactive');
+        d3.select('#healthcare').attr('class','aText inactive');
     })
     
+    healthcareXLabel.on('mouseover',function(){
+        d3.select(this).style('cursor','pointer')
+    })
+    .on('mouseout',function(){
+        d3.select(this).style('cursor','default')
+    })
+    .on('click',function(){
+        xAxis = 'healthcare';
+        theyClickedSomething(xAxis,yAxis);
+        d3.select(this).attr('class','aText active');
+        d3.select('#age').attr('class','aText inactive');
+        d3.select('#income').attr('class','aText inactive');
+    })
 
     smokesYLabel.on('mouseover',function(){
         d3.select(this).style('cursor','pointer')
@@ -159,7 +173,8 @@ The graphing work!
             yAxis = 'smokes';
             theyClickedSomething(xAxis,yAxis);
             d3.select(this).attr('class','aText active');
-            d3.select('#poverty').attr('class','aText inactive');
+            d3.select('#poverty').attr('class','aText inactive');            
+            d3.select('#obesity').attr('class','aText inactive');
         });
 
     povertyYLabel.on('mouseover',function(){
@@ -173,8 +188,22 @@ The graphing work!
             theyClickedSomething(xAxis,yAxis);
             d3.select(this).attr('class','aText active');
             d3.select('#smokes').attr('class','aText inactive');
+            d3.select('#obesity').attr('class','aText inactive');
         });
     
+    obesityYLabel.on('mouseover',function(){
+        d3.select(this).style('cursor','pointer')
+        })
+        .on('mouseout',function(){
+            d3.select(this).style('cursor','default')
+        })
+        .on('click',function(){
+            yAxis = 'obesity';
+            theyClickedSomething(xAxis,yAxis);
+            d3.select(this).attr('class','aText active');
+            d3.select('#smokes').attr('class','aText inactive');
+            d3.select('#poverty').attr('class','aText inactive');
+        });
 
 }).catch(function(error){
     console.log(error);
